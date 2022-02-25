@@ -12,7 +12,7 @@ const MongoClient = require('mongodb').MongoClient
     const db = client.db('ParadoxGamesDB')
     const gamesCollection = db.collection('Games')
 
-    app.post('/quotes', (req, res) => {
+    app.post('/quotes/create', (req, res) => {
         gamesCollection.insertOne(req.body)
           .then(result => {
             res
@@ -21,6 +21,16 @@ const MongoClient = require('mongodb').MongoClient
             .end();
           })
           .catch(error => console.error(error))
+      })
+
+      app.get('/quotes', (req, res) => {
+        var allGames = gamesCollection.find();
+
+        res
+            .status(200)
+            .send(allGames)
+            .end();
+
       })
 
   })
