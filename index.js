@@ -24,13 +24,9 @@ const MongoClient = require('mongodb').MongoClient
       })
 
       app.get('/quotes', (req, res) => {
-        var allGames = gamesCollection.find().toArray();
-
-        res
-            .status(200)
-            .send(allGames)
-            .end();
-
+        gamesCollection.find({}).toArray(function(err, quotes) {
+            res.status(200).json({'quotes' : quotes});
+        });
       })
 
   })
