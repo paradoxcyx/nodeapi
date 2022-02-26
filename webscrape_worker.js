@@ -6,11 +6,13 @@ const MongoClient = require('mongodb').MongoClient
 
 MongoClient.connect('mongodb+srv://heinrich:namakwa1012@cluster0.i4lw2.mongodb.net/ParadoxGamesDB?retryWrites=true&w=majority', { useUnifiedTopology: true })
 .then(client => {
-    console.log('Connected to Database')
-    console.log('Running CRON Job')  
+    console.log('Connected to Database');
+    console.log('Running CRON Job');  
 
-    const db = client.db('ParadoxGamesDB')
-    const gamesCollection = db.collection('Games')
+    const db = client.db('ParadoxGamesDB');
+    const gamesCollection = db.collection('Games');
+
+    gamesCollection.deleteMany();
 
     axios.get('https://dev.to/')
     .then(res => {
