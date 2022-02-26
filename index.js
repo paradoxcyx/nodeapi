@@ -15,7 +15,12 @@ const MongoClient = require('mongodb').MongoClient
 
       app.get('/games', (req, res) => {
         gamesCollection.find({}).toArray(function(err, games) {
-            res.status(200).json({'games' : games});
+
+            var returnBody = {
+              'count': games.length,
+              'games': games
+            }
+            res.status(200).json(returnBody);
         });
       })
 
