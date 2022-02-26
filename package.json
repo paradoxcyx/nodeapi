@@ -2,15 +2,22 @@
   "name": "nodeapi",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "webscrape_worker.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js ",
+    "dev:": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.26.0",
+    "bull": "^4.6.2",
+    "bullmq": "^1.75.0",
+    "cheerio": "^1.0.0-rc.10",
     "express": "^4.17.3",
-    "mongodb": "^4.4.0"
+    "mongodb": "^4.4.0",
+    "node-cron": "^3.0.0",
+    "node-schedule": "^2.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
