@@ -11,37 +11,55 @@ MongoClient.connect('mongodb+srv://heinrich:namakwa1012@cluster0.i4lw2.mongodb.n
 
     const db = client.db('ParadoxGamesDB');
     const gamesCollection = db.collection('Games');
-
+    
     gamesCollection.deleteMany();
 
-    axios.get('https://dev.to/')
-    .then(res => {
-        const $ = cheerio.load(res.data)
-        $('.crayons-story').each((index, element) => {
-
-            const author = $(element).find('.profile-preview-card__trigger').text().replace(/\s\s+/g, '');
-            const blogTitle = $(element).find('.crayons-story__title').text().replace(/\s\s+/g, '');
-            const blogLink = $(element).find('a').attr('href');
-            const readTime = $(element).find('.crayons-story__tertiary').text();
-            const dev = 'https://dev.to';
-            const joinedBlogLink = `${dev}` + `${blogLink}`;
-          
-            var json = { author, blogTitle, blogLink, readTime, dev, joinedBlogLink };
-
-            gamesCollection.insertOne(json);
-            console.log('Inserting: ' + json);
-        });
-
-
-    }).catch(err => console.error(err))
-
-   
+    ProcessWebScrape(gamesCollection);
 
     cron.schedule('0 0 */3 * * *', function() {
-        console.log('running a task every 3 hours');
+        gamesCollection.deleteMany();
+        ProcessWebScrape(gamesCollection);
     });
 
 
 })
 .catch(error => console.error(error));
 
+
+
+function ProcessWebScrape(gamesCollection)
+{
+    var allGames = [];
+
+    for (let year = 2000; year <= 2022; year++) {
+        axios.get('https://www.game-debate.com/games?year=' + year)
+        .then(res => {
+            const $ = cheerio.load(res.data)
+            $('body > main > div.game-list-container > div.games-list-table > table > tbody > tr').each((index, element) => {
+    
+                var name = $($(element).find('td')[0]).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // Game Name
+                var release = $($(element).find('td')[2]).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // Release
+                var genre = $($(element).find('td')[3]).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // Genre
+    
+                var json = {
+                    gameName: name,
+                    gameRelease: release,
+                    gameGenre: genre
+                };
+    
+                allGames.push(json);
+            });
+
+            gamesCollection.insertMany(allGames);
+            allGames = [];
+
+            console.log('Completed Year: ' + year);
+    
+    
+        }).catch(err => console.error(err));
+
+        
+      }
+      
+
+}

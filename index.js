@@ -12,20 +12,10 @@ const MongoClient = require('mongodb').MongoClient
     const db = client.db('ParadoxGamesDB')
     const gamesCollection = db.collection('Games')
 
-    app.post('/quotes/create', (req, res) => {
-        gamesCollection.insertOne(req.body)
-          .then(result => {
-            res
-            .status(200)
-            .send(result)
-            .end();
-          })
-          .catch(error => console.error(error))
-      })
 
-      app.get('/quotes', (req, res) => {
-        gamesCollection.find({}).toArray(function(err, quotes) {
-            res.status(200).json({'quotes' : quotes});
+      app.get('/games', (req, res) => {
+        gamesCollection.find({}).toArray(function(err, games) {
+            res.status(200).json({'games' : games});
         });
       })
 
