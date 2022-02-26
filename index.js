@@ -14,7 +14,14 @@ const MongoClient = require('mongodb').MongoClient
 
 
       app.get('/games', (req, res) => {
-        gamesCollection.find({}).toArray(function(err, games) {
+
+        var apiResponse = JSON.parse(req.body);
+
+        var genreFilter = apiResponse.genre;
+        var keyword = genreFilter;
+        var regex = RegExp("." + keyword + ".");
+
+        gamesCollection.find({gameGenre: regex}).toArray(function(err, games) {
 
             var returnBody = {
               'count': games.length,
