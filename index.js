@@ -1,8 +1,5 @@
 const express = require('express');
 const app = express();
-const axios = require('axios');
-const cheerio = require('cheerio');
-
 app.use(express.json());
 
 const pillIdentifierController = require('./endpoints/pillidentifier'); 
