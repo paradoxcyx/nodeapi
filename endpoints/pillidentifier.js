@@ -31,7 +31,7 @@ const pillidentifier = async (req, res) => {
 
       //#content > div.contentBox > div.ddc-pid-list > div
 
-      await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }  })
+      await axios.get(url)
         .then(res => {
           const $ = cheerio.load(res.data)
           var pills = [];

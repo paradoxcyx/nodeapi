@@ -16,8 +16,8 @@ MongoClient.connect('mongodb+srv://heinrich:namakwa1012@cluster0.i4lw2.mongodb.n
     pillShapesCollection.deleteMany();
     pillColorsCollection.deleteMany();
 
-    ProcessPillShapesWebScrape(pillShapesCollection);
-    ProcessPillColorsWebScrape(pillColorsCollection);
+    //ProcessPillShapesWebScrape(pillShapesCollection);
+    //ProcessPillColorsWebScrape(pillColorsCollection);
     //ProcessWebScrape(gamesCollection);
 
 
@@ -25,7 +25,7 @@ MongoClient.connect('mongodb+srv://heinrich:namakwa1012@cluster0.i4lw2.mongodb.n
         pillShapesCollection.deleteMany();
         pillColorsCollection.deleteMany();
 
-        ProcessPillShapesWebScrape(gamesCollection);
+        //ProcessPillShapesWebScrape(gamesCollection);
     });
 
 
