@@ -10,56 +10,88 @@ MongoClient.connect('mongodb+srv://heinrich:namakwa1012@cluster0.i4lw2.mongodb.n
     console.log('Running CRON Job');  
 
     const db = client.db('ParadoxGamesDB');
-    const gamesCollection = db.collection('Games');
-    
-    gamesCollection.deleteMany();
+    const pillShapesCollection = db.collection('drug-pill-shapes');
+    const pillColorsCollection = db.collection('drug-pill-colors');
 
-    ProcessWebScrape(gamesCollection);
+    pillShapesCollection.deleteMany();
+    pillColorsCollection.deleteMany();
+
+    ProcessPillShapesWebScrape(pillShapesCollection);
+    ProcessPillColorsWebScrape(pillColorsCollection);
+    //ProcessWebScrape(gamesCollection);
+
 
     cron.schedule('0 0 */3 * * *', function() {
-        gamesCollection.deleteMany();
-        ProcessWebScrape(gamesCollection);
+        pillShapesCollection.deleteMany();
+        pillColorsCollection.deleteMany();
+
+        ProcessPillShapesWebScrape(gamesCollection);
     });
 
 
 })
 .catch(error => console.error(error));
 
-
-
-function ProcessWebScrape(gamesCollection)
+function ProcessPillColorsWebScrape(collection)
 {
-    var allGames = [];
+    axios.get('https://www.drugs.com/imprints.php')
+    .then(res => {
+        const $ = cheerio.load(res.data)
 
-    for (let year = 2000; year <= 2022; year++) {
-        axios.get('https://www.game-debate.com/games?year=' + year)
-        .then(res => {
-            const $ = cheerio.load(res.data)
-            $('body > main > div.game-list-container > div.games-list-table > table > tbody > tr').each((index, element) => {
-    
-                var name = $($(element).find('td')[0]).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // Game Name
-                var release = $($(element).find('td')[2]).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // Release
-                var genre = $($(element).find('td')[3]).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // Genre
-    
+        var allGames = [];
+
+        $('#color-select > option').each((index, element) => {
+
+            var colorName = $(element).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // PillShape
+            var colorID = $(element).attr('value');
+            
+            if (colorID && colorID != '0')
+            {
                 var json = {
-                    gameName: name,
-                    gameRelease: release,
-                    gameGenre: genre
+                    id: colorID,
+                    name: colorName
                 };
     
                 allGames.push(json);
-            });
+            }
+            
+        });
 
-            gamesCollection.insertMany(allGames);
-            allGames = [];
+        collection.insertMany(allGames);
+        allGames = [];
 
-            console.log('Completed Year: ' + year);
-    
-    
-        }).catch(err => console.error(err));
 
-        
-      }
-      
 
+    }).catch(err => console.error(err));
 }
+
+
+function ProcessPillShapesWebScrape(collection)
+{
+    axios.get('https://www.drugs.com/api/pill-id/pill-shapes.html')
+    .then(res => {
+        const $ = cheerio.load(res.data)
+
+        var allGames = [];
+
+        $('.pill-shape').each((index, element) => {
+
+            var pillShape = $(element).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // PillShape
+            var pillID = $(element).attr('data-shape-id');
+
+            var json = {
+                id: pillID,
+                shape: pillShape
+            };
+
+            allGames.push(json);
+        });
+
+        collection.insertMany(allGames);
+        allGames = [];
+
+
+
+    }).catch(err => console.error(err));
+}
+
