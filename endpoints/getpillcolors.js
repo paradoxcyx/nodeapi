@@ -1,36 +1,46 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const got = require('got');
 
-const getpillcolors = async (req, res) => {
+const getpillcolors = async (req, response) => {
     try {
         var allColors = [];
-        var htmlData;
 
-        await axios.get('https://www.drugs.com/imprints.php')
-        .then(res => {
-            const $ = cheerio.load(res.data)
-    
-            htmlData = res.data;
-
-            $('#color-select > option').each((index, element) => {
-    
-                var colorName = $(element).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // PillShape
-                var colorID = $(element).attr('value');
+        (async () => {
+            try {
+                const res = await got('https://www.drugs.com/imprints.php');
                 
-                if (colorID && colorID != '0')
-                {
-                    var json = {
-                        id: colorID,
-                        name: colorName
-                    };
+                const $ = cheerio.load(res.body)
+
+
+                $('#color-select > option').each((index, element) => {
         
-                    allColors.push(json);
-                }
-                
-            });
-        }).catch(err => console.error(err));
+                    var colorName = $(element).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // PillShape
+                    var colorID = $(element).attr('value');
+                    
+                    if (colorID && colorID != '0')
+                    {
+                        var json = {
+                            id: colorID,
+                            name: colorName
+                        };
+            
+                        allColors.push(json);
+                    }
 
-        res.status(200).json({count: allColors.length, message: htmlData, colors: allColors});
+                    
+                    
+                });
+
+                response.status(200).json({count: allColors.length, message: 'success', colors: allColors});
+                
+            } catch (error) {
+                console.log(error.message);
+                response.status(500).json({count: 0, message: error.message, colors: []})
+            }
+        })();
+
+
     }
     catch (e) {
       console.error(e);

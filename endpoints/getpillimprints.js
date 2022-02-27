@@ -1,30 +1,38 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const got = require('got');
 
-const getpillimprints = async (req, res) => {
+const getpillimprints = async (req, response) => {
 
     try {
-      var returnBody = {};
 
-      await axios.get('https://www.drugs.com/js/search/?id=livesearch-imprint&s=' + req.query.search)
-        .then(res => {
-          const $ = cheerio.load(res.data)
-          var imprints = [];
+      (async () => {
+        try {
+            const res = await got('https://www.drugs.com/js/search/?id=livesearch-imprint&s=' + req.query.search);
+            
+            const $ = cheerio.load(res.body)
+            var imprints = [];
+  
+            $('.ls-item > var').each((index, element) => {
+  
+                var imprint = $(element).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // PillShape
+  
+                imprints.push(imprint);
+            });
+  
+            var returnBody = {
+              'count': imprints.length,
+              'imprints': imprints
+            }
 
-          $('.ls-item > var').each((index, element) => {
+            response.status(200).json(returnBody);
+            
+        } catch (error) {
+            console.log(error.message);
+            response.status(500).json({count: 0, message: error.message, imprints: []})
+        }
+    })();
 
-              var imprint = $(element).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // PillShape
-
-              imprints.push(imprint);
-          });
-
-          returnBody = {
-            'count': imprints.length,
-            'imprints': imprints
-          }
-          
-
-        }).catch(err => console.error(err));
 
         res.status(200).json(returnBody);
     }
