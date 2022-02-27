@@ -69,7 +69,7 @@ const pillidentifier = async (req, res) => {
           }
           
 
-        }).catch(err => console.error(err));
+        }).catch(err => res.status(500).json({count: 0, message: error, pills: []}));
 
         res.status(200).json(returnBody);
 
