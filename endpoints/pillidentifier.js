@@ -69,14 +69,14 @@ const pillidentifier = async (req, res) => {
           }
           
 
-        }).catch(err => res.status(500).json({count: 0, message: error, pills: []}));
+        }).catch(err => res.status(500).json({count: 0, message: err.message, pills: []}));
 
         res.status(200).json(returnBody);
 
     }
     catch (e) {
       console.error(e);
-      res.status(500).json({count: 0, message: e, pills: []});
+      res.status(500).json({count: 0, message: e.message, pills: []});
     }
   };
 
