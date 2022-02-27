@@ -4,11 +4,14 @@ const cheerio = require('cheerio');
 const getpillcolors = async (req, res) => {
     try {
         var allColors = [];
+        var htmlData;
+
         await axios.get('https://www.drugs.com/imprints.php')
         .then(res => {
             const $ = cheerio.load(res.data)
     
-    
+            htmlData = res.data;
+
             $('#color-select > option').each((index, element) => {
     
                 var colorName = $(element).text().replace(/(?:\\[rn]|[\r\n]+)+/g, "").trim(); // PillShape
@@ -27,7 +30,7 @@ const getpillcolors = async (req, res) => {
             });
         }).catch(err => console.error(err));
 
-        res.status(200).json({count: allColors.length, message: 'Success', colors: allColors});
+        res.status(200).json({count: allColors.length, message: htmlData, colors: allColors});
     }
     catch (e) {
       console.error(e);
