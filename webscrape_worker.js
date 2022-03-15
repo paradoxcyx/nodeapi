@@ -4,7 +4,7 @@ const cheerio = require('cheerio');
 
 const MongoClient = require('mongodb').MongoClient
 
-MongoClient.connect('mongodb+srv://heinrich:namakwa1012@cluster0.i4lw2.mongodb.net/ParadoxGamesDB?retryWrites=true&w=majority', { useUnifiedTopology: true })
+MongoClient.connect('***', { useUnifiedTopology: true })
 .then(client => {
     console.log('Connected to Database');
     console.log('Running CRON Job');  
